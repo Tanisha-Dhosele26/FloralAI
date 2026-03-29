@@ -61,7 +61,7 @@ FloralAI/
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the Repository
-git clone https://github.com/your-username/FloralAI.git
+git clone https://github.com/Tanisha-Dhosele26/FloralAI.git
 cd FloralAI
 
 ### 2️⃣ Install Frontend Dependencies
