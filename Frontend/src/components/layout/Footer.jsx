@@ -21,7 +21,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* 🔗 Navigation */}
+        {/*  Navigation of footer */}
         <div>
           <h3 className="font-semibold text-gray-800 mb-3">
             Quick Links
