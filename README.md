@@ -74,7 +74,7 @@ npm run dev
 ## 🧑‍🤝‍🧑 Team Contribution
 
 - Tanisha Dhosele → Frontend + AI Integration  
-- Teammate → Backend + Database  
+- Vaishnavi Bisen → Backend + Database  
 
 ## 📊 Current Progress
 
