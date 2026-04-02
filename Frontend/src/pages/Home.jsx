@@ -91,7 +91,7 @@ const Home = () => {
                   className="w-full h-40 object-cover rounded-xl"
                 />
                 <h3 className="mt-4 font-semibold text-lg text-pink-600">
-                  Custome Gifts
+                  Custom Gifts
                 </h3>
                 <p className="text-gray-500 text-sm mt-2">
                   Add chocolates, greeting cards, and more to your floral
