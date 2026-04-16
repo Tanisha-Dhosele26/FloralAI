@@ -15,14 +15,33 @@ const Signup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
 
-    localStorage.setItem("user", JSON.stringify(form));
+    const data = await res.json();
 
-    alert("Signup successful 🎉");
-    navigate("/login");
-  };
+    if (res.ok) {
+      alert("Signup successful 🎉");
+      navigate("/login");
+    } else {
+      console.log(res.status);
+      console.log(data);
+      alert(data.message || "Signup failed");
+    }
+
+  } catch (error) {
+    console.log(error);
+    alert("Something went wrong");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white px-4">
