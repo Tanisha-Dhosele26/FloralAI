@@ -5,13 +5,12 @@ const generateMessage = async (req, res) => {
     const { flowers, addOns, style } = req.body;
 
     const prompt = `
-    Generate a short, emotional bouquet message.
+    Generate a ${style} message for a bouquet.
 
     Flowers: ${flowers}
     Add-ons: ${addOns}
-    Style: ${style}
 
-    Keep it under 40 words and make it meaningful.
+    Keep it under 40 words and make it meaningful and match the tone of the selected style properly.
     `;
 
     const result = await model.generateContent(prompt);

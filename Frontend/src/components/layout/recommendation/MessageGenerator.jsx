@@ -15,7 +15,7 @@ const MessageGenerator = ({ flowers, addOns, setMessage, message }) => {
         {
           flowers,
           addOns,
-          style: "Romantic", // you can make this dynamic later
+          style, 
         }
       );
 

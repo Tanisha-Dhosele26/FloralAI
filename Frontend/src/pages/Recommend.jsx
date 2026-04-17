@@ -9,6 +9,9 @@ const Recommend = () => {
   const [flowers, setFlowers] = useState([]);
   const [addOns, setAddOns] = useState([]);
   const [message, setMessage] = useState("");
+  const [style, setStyle ] = useState("Romantic");
+
+
   const navigate = useNavigate();
 
   const handleRecommend = (data) => {
@@ -51,7 +54,33 @@ const Recommend = () => {
             addOns={addOns}
             message={message}
             setMessage={setMessage}
-          />
+          /> 
+
+          {/*  STYLE SELECTOR */}
+            <div className="text-center">
+              <h2 className="text-lg font-semibold text-gray-700 mb-2">
+                Select Message Style 🎨
+              </h2>
+
+              <select
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                className="px-4 py-2 rounded-lg border shadow"
+              >
+                <option value="Romantic">Romantic ❤️</option>
+                <option value="Friendly">Friendly 😊</option>
+                <option value="Formal">Formal 🎩</option>
+              </select>
+            </div>
+
+            {/* 💌 MESSAGE GENERATOR */}
+            <MessageGenerator
+              flowers={flowers}
+              addOns={addOns}
+              style={style}   // ✅ 
+              message={message}
+              setMessage={setMessage}
+            />
 
           {/* Navigate only after message generated */}
             <button
