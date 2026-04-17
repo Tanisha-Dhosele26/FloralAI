@@ -45,12 +45,7 @@ const Navbar = () => {
             </Link>
           </li>
 
-          <li className="hover:text-pink-500 transition flex items-center gap-1">
-            <Link to="/orderSummary" className="flex items-center gap-1">
-              <ShoppingCartIcon fontSize="small" /> Order
-            </Link>
-          </li>
-
+          
           {user ? (
             <li className="hover:text-pink-500">
               <Link to="/profile">Profile</Link>

@@ -1,20 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
+import axios from "axios";
 
-const MessageGenerator = ({ flowers, setMessage, message }) => {
-  const generateMessage = () => {
-    if (!flowers.length) {
-      setMessage("Please select bouquet first.");
-      return;
-    }
+const MessageGenerator = ({ flowers, addOns, setMessage, message }) => {
 
-    if (flowers.includes("Rose")) {
-      setMessage("You are my love and everything ❤️");
-    } else if (flowers.includes("Daisy")) {
-      setMessage("Stay bright and fresh like a daisy 🌼");
-    } else if (flowers.includes("Lily")) {
-      setMessage("Purity and elegance always shine ✨");
-    } else {
-      setMessage("Let love bloom beautifully 🌷");
+  const generateMessage = async () => {
+    try {
+      if (!flowers.length) {
+        setMessage("Please select bouquet first.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:5000/api/message/generate",
+        {
+          flowers,
+          addOns,
+          style: "Romantic", // you can make this dynamic later
+        }
+      );
+
+      setMessage(response.data.message);
+
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to generate AI message");
     }
   };
 

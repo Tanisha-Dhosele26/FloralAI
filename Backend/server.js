@@ -10,8 +10,10 @@ app.use(cors());
 app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 app.use("/api/auth", authRoutes);
+app.use("/api/message", messageRoutes);
 
 
 app.get('/', (req, res) => {

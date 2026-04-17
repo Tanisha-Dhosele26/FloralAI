@@ -53,16 +53,22 @@ const Recommend = () => {
             setMessage={setMessage}
           />
 
-          <button
-            onClick={() =>
-              navigate("/orderSummary", {
-                state: { flowers, addOns, message },
-              })
-            }
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
-          >
-            Proceed to Order
-          </button>
+          {/* Navigate only after message generated */}
+            <button
+              onClick={() => {
+                if (!message) {
+                  alert("Please generate message first!");
+                  return;
+                }
+
+                navigate("/bouquetResult", {
+                  state: { flowers, addOns, message },
+                });
+              }}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
+            >
+              View Bouquet 💐
+            </button>
         </div>
       )}
       </div>
