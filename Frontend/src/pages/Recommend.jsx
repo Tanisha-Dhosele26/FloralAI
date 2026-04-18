@@ -49,12 +49,6 @@ const Recommend = () => {
 
           <AddonSelector addOns={addOns} setAddOns={setAddOns} />
 
-          <MessageGenerator
-            flowers={flowers}
-            addOns={addOns}
-            message={message}
-            setMessage={setMessage}
-          /> 
 
           {/*  STYLE SELECTOR */}
             <div className="text-center">
@@ -67,9 +61,9 @@ const Recommend = () => {
                 onChange={(e) => setStyle(e.target.value)}
                 className="px-4 py-2 rounded-lg border shadow"
               >
-                <option value="Romantic">Romantic ❤️</option>
-                <option value="Friendly">Friendly 😊</option>
-                <option value="Formal">Formal 🎩</option>
+                <option value="Romantic">Romantic </option>
+                <option value="Friendly">Friendly </option>
+                <option value="Formal">Formal </option>
               </select>
             </div>
 

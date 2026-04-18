@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
-const MessageGenerator = ({ flowers, addOns, setMessage, message }) => {
+const MessageGenerator = ({ flowers, addOns, style, setMessage, message }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const generateMessage = async () => {
     try {
@@ -10,20 +12,28 @@ const MessageGenerator = ({ flowers, addOns, setMessage, message }) => {
         return;
       }
 
+      setLoading(true);
+      setError("");
+
       const response = await axios.post(
         "http://localhost:5000/api/message/generate",
         {
           flowers,
           addOns,
-          style, 
+          style,
         }
       );
 
       setMessage(response.data.message);
 
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to generate AI message");
+    } catch (err) {
+      console.error(err);
+
+      // Show user-friendly error
+      setError("Server busy. Please try again 🔄");
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,12 +45,30 @@ const MessageGenerator = ({ flowers, addOns, setMessage, message }) => {
 
       <button
         onClick={generateMessage}
-        className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full shadow transition"
+        disabled={loading}
+        className={`px-6 py-2 rounded-full shadow transition text-white ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-purple-500 hover:bg-purple-600"
+        }`}
       >
-        Generate Message
+        {loading ? "Generating..." : "Generate Message"}
       </button>
 
-      {message && (
+      {/* ERROR MESSAGE */}
+      {error && (
+  <div className="mt-4">
+    <p className="text-red-500 font-medium">{error}</p>
+    <button
+      onClick={generateMessage}
+      className="mt-2 bg-red-500 text-white px-4 py-1 rounded"
+    >
+      Retry 🔄
+    </button>
+  </div>
+)}
+      {/* SUCCESS MESSAGE */}
+      {message && !loading && (
         <p className="mt-4 bg-white/50 backdrop-blur-md p-4 rounded-xl shadow">
           {message}
         </p>
