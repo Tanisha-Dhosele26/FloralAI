@@ -98,7 +98,7 @@ const BouquetResult = () => {
         onClick={handleDownload}
         className="absolute bottom-6 bg-green-500 text-white px-5 py-2 rounded-xl shadow-lg"
       >
-        Download Bouquet Card 
+        Download Message Card 
       </button>
 
     </div>

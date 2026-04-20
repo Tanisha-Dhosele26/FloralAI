@@ -10,20 +10,52 @@ const Recommend = () => {
   const [addOns, setAddOns] = useState([]);
   const [message, setMessage] = useState("");
   const [style, setStyle] = useState("Romantic");
+  const [loading, setLoading] = useState(false);
+  const [formdata, setFormData] = useState({});
 
   const navigate = useNavigate();
 
-  const handleRecommend = (data) => {
-    const occasion = data.occasion.toLowerCase();
+  // 🔥 AI FLOWER GENERATION
+  const handleRecommend = async (data) => {
+    try {
+      setFormData(data);
+      setLoading(true);
 
-    if (occasion === "birthday") setFlowers(["Daisy"]);
-    else if (occasion === "anniversary") setFlowers(["Rose"]);
-    else if (occasion === "propose") setFlowers(["Tulip"]);
-    else setFlowers(["Rose", "Lily"]);
+      const response = await fetch("http://localhost:5000/api/message/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          occasion: data.occasion,
+          relationship: data.relationship,
+          personality: data.personality,
+        }),
+      });
+
+      const result = await response.json();
+
+      // 🧠 CLEAN AI OUTPUT
+      const aiFlowers = result.message
+        .replace(/\n/g, "")
+        .replace("Flowers:", "")
+        .split(",")
+        .map((f) => f.trim())
+        .filter((f) => f.length > 0);
+
+      setFlowers(aiFlowers);
+
+    } catch (error) {
+      console.error(error);
+      alert("AI flower generation failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-cover bg-center relative"
+    <div
+      className="min-h-screen py-20 px-4 bg-cover bg-center relative"
       style={{
         backgroundImage:
           "url('https://images.unsplash.com/photo-1646451711039-6a97dc8dfb45?q=80&w=1074&auto=format&fit=crop')",
@@ -41,7 +73,15 @@ const Recommend = () => {
           <RecommendationForm onRecommend={handleRecommend} />
         </div>
 
-        {flowers.length > 0 && (
+        {/* LOADING */}
+        {loading && (
+          <p className="text-center mt-6 text-lg text-gray-600">
+            Generating bouquet... 🌸
+          </p>
+        )}
+
+        {/* RESULT */}
+        {flowers.length > 0 && !loading && (
           <div className="max-w-5xl mx-auto mt-12 space-y-10">
 
             <RecommendedBouquet flowers={flowers} />
@@ -71,9 +111,11 @@ const Recommend = () => {
               style={style}
               message={message}
               setMessage={setMessage}
+              occasion={formdata.occasion}
+              relationship={formdata.relationship}
+              personality={formdata.personality}
             />
 
-            {/* 🚀 NAVIGATION */}
             <button
               onClick={() => {
                 if (!message) {
@@ -82,7 +124,7 @@ const Recommend = () => {
                 }
 
                 navigate("/bouquetResult", {
-                  state: { flowers, addOns, message, style }, // ✅ STYLE ADDED
+                  state: { flowers, addOns, message, style },
                 });
               }}
               className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"

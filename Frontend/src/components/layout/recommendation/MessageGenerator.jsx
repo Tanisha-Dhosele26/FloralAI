@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const MessageGenerator = ({ flowers, addOns, style, setMessage, message }) => {
+const MessageGenerator = ({
+  flowers,
+  addOns,
+  style,
+  setMessage,
+  message,
+  occasion,
+  relationship,
+  personality,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -19,8 +28,11 @@ const MessageGenerator = ({ flowers, addOns, style, setMessage, message }) => {
         "http://localhost:5000/api/message/generate",
         {
           flowers,
-          addOns,
+          addOns: addOns || [], // ✅ SAFE FIX
           style,
+          occasion,
+          relationship,
+          personality,
         }
       );
 
@@ -28,10 +40,7 @@ const MessageGenerator = ({ flowers, addOns, style, setMessage, message }) => {
 
     } catch (err) {
       console.error(err);
-
-      // Show user-friendly error
       setError("Server busy. Please try again 🔄");
-
     } finally {
       setLoading(false);
     }
@@ -55,21 +64,20 @@ const MessageGenerator = ({ flowers, addOns, style, setMessage, message }) => {
         {loading ? "Generating..." : "Generate Message"}
       </button>
 
-      {/* ERROR MESSAGE */}
       {error && (
-  <div className="mt-4">
-    <p className="text-red-500 font-medium">{error}</p>
-    <button
-      onClick={generateMessage}
-      className="mt-2 bg-red-500 text-white px-4 py-1 rounded"
-    >
-      Retry 🔄
-    </button>
-  </div>
-)}
-      {/* SUCCESS MESSAGE */}
+        <div className="mt-4">
+          <p className="text-red-500">{error}</p>
+          <button
+            onClick={generateMessage}
+            className="mt-2 bg-red-500 text-white px-4 py-1 rounded"
+          >
+            Retry 🔄
+          </button>
+        </div>
+      )}
+
       {message && !loading && (
-        <p className="mt-4 bg-white/50 backdrop-blur-md p-4 rounded-xl shadow">
+        <p className="mt-4 bg-white/50 p-4 rounded-xl shadow">
           {message}
         </p>
       )}
