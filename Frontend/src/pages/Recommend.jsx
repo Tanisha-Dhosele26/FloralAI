@@ -15,7 +15,7 @@ const Recommend = () => {
 
   const navigate = useNavigate();
 
-  // 🔥 AI FLOWER GENERATION
+  // 🌸 AI FLOWER GENERATION
   const handleRecommend = async (data) => {
     try {
       setFormData(data);
@@ -35,15 +35,8 @@ const Recommend = () => {
 
       const result = await response.json();
 
-      // 🧠 CLEAN AI OUTPUT
-      const aiFlowers = result.message
-        .replace(/\n/g, "")
-        .replace("Flowers:", "")
-        .split(",")
-        .map((f) => f.trim())
-        .filter((f) => f.length > 0);
-
-      setFlowers(aiFlowers);
+      // ✅ FIXED (no replace error)
+      setFlowers(result.flowers || []);
 
     } catch (error) {
       console.error(error);
@@ -84,8 +77,10 @@ const Recommend = () => {
         {flowers.length > 0 && !loading && (
           <div className="max-w-5xl mx-auto mt-12 space-y-10">
 
+            {/* 🌸 Bouquet */}
             <RecommendedBouquet flowers={flowers} />
 
+            {/* 🎁 Add-ons */}
             <AddonSelector addOns={addOns} setAddOns={setAddOns} />
 
             {/* 🎨 STYLE SELECTOR */}
@@ -105,6 +100,7 @@ const Recommend = () => {
               </select>
             </div>
 
+            {/* 💌 MESSAGE GENERATOR */}
             <MessageGenerator
               flowers={flowers}
               addOns={addOns}
@@ -116,10 +112,11 @@ const Recommend = () => {
               personality={formdata.personality}
             />
 
+            {/* 🚀 NAVIGATION */}
             <button
               onClick={() => {
                 if (!message) {
-                  alert("Please generate message first!");
+                  alert("Please select a message first!");
                   return;
                 }
 
