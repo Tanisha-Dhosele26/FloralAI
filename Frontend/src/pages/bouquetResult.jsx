@@ -2,13 +2,6 @@ import React, { useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { toPng } from "html-to-image";
 
-const flowerImages = {
-  Rose: "https://images.unsplash.com/photo-1729864432143-2d91aa3736aa?q=80&w=735",
-  Lily: "https://images.unsplash.com/photo-1639835170868-d43a19bbd180?q=80&w=1191",
-  Tulip: "https://plus.unsplash.com/premium_photo-1671974490018-813bcb0d6635?q=80&w=1220",
-  Daisy: "https://images.unsplash.com/photo-1686298804691-c7df01a856ef?q=80&w=1170",
-};
-
 const themes = {
   Romantic: {
     bg: "from-pink-200 via-rose-100 to-pink-300",
@@ -57,13 +50,13 @@ const BouquetResult = () => {
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/30 rounded-full blur-2xl"></div>
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/30 rounded-full blur-2xl"></div>
 
-        {/* Flowers */}
+        {/* 🌸 FLOWERS FIXED */}
         <div className="flex justify-center gap-3 flex-wrap mb-4">
           {flowers.map((flower, index) => (
             <img
               key={index}
-              src={flowerImages[flower]}
-              alt={flower}
+              src={flower.image} // ✅ FIXED
+              alt={flower.name}  // ✅ FIXED
               className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg hover:scale-110 transition"
             />
           ))}
@@ -71,7 +64,7 @@ const BouquetResult = () => {
 
         {/* Title */}
         <h2 className={`text-2xl font-bold ${theme.text} mb-2`}>
-          Your Digital Bouquet with Message to share💐
+          Your Digital Bouquet with Message to share 💐
         </h2>
 
         {/* Add-ons */}
@@ -98,7 +91,7 @@ const BouquetResult = () => {
         onClick={handleDownload}
         className="absolute bottom-6 bg-green-500 text-white px-5 py-2 rounded-xl shadow-lg"
       >
-        Download Message Card 
+        Download Message Card
       </button>
 
     </div>

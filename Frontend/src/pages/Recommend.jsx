@@ -4,6 +4,7 @@ import RecommendedBouquet from "../components/layout/recommendation/RecommendedB
 import AddonSelector from "../components/layout/recommendation/AddonSelector";
 import MessageGenerator from "../components/layout/recommendation/MessageGenerator";
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "../utils/api"; // ✅ IMPORT
 
 const Recommend = () => {
   const [flowers, setFlowers] = useState([]);
@@ -12,44 +13,128 @@ const Recommend = () => {
   const [style, setStyle] = useState("Romantic");
   const [loading, setLoading] = useState(false);
   const [formdata, setFormData] = useState({});
+  const [bouquetId, setBouquetId] = useState(null);
 
   const navigate = useNavigate();
 
-  // 🔥 AI FLOWER GENERATION
+  // 🔥 STEP 1: GENERATE FLOWERS + SAVE
   const handleRecommend = async (data) => {
     try {
       setFormData(data);
       setLoading(true);
 
+      // 🌐 CALL GEMINI (no auth needed)
       const response = await fetch("http://localhost:5000/api/message/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          occasion: data.occasion,
-          relationship: data.relationship,
-          personality: data.personality,
-        }),
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) throw new Error("API request failed");
 
       const result = await response.json();
 
-      // 🧠 CLEAN AI OUTPUT
+      // 🌸 PARSE FLOWERS
       const aiFlowers = result.message
         .replace(/\n/g, "")
-        .replace("Flowers:", "")
+        .replace(/Flowers:/gi, "")
         .split(",")
         .map((f) => f.trim())
-        .filter((f) => f.length > 0);
+        .filter(Boolean);
 
-      setFlowers(aiFlowers);
+      const formattedFlowers = aiFlowers.map((f) => ({
+        name: f,
+        image: "https://picsum.photos/150", // ✅ better placeholder
+      }));
+
+      setFlowers(formattedFlowers);
+
+      // 💾 SAVE TO DB (uses authFetch)
+      const saved = await authFetch("/bouquets", {
+        method: "POST",
+        body: JSON.stringify({
+          ...data,
+          flowers: formattedFlowers,
+        }),
+      });
+
+      setBouquetId(saved.bouquetId);
 
     } catch (error) {
-      console.error(error);
-      alert("AI flower generation failed");
+      console.error("❌ ERROR:", error.message);
+      alert(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔥 STEP 2: ADD-ONS
+  const handleAddOnChange = async (newAddOns) => {
+    setAddOns(newAddOns);
+
+    if (!bouquetId) return;
+
+    try {
+      await authFetch(`/bouquets/${bouquetId}/addons`, {
+        method: "PUT",
+        body: JSON.stringify({ addOns: newAddOns }),
+      });
+
+      console.log("🎁 ADD-ONS UPDATED");
+    } catch (err) {
+      console.error("❌ Add-ons update failed:", err.message);
+    }
+  };
+
+  // 🔥 STEP 3: MESSAGE
+  const handleMessageSave = async (msg) => {
+    setMessage(msg);
+
+    if (!bouquetId) return;
+
+    try {
+      await authFetch(`/bouquets/${bouquetId}/message`, {
+        method: "PUT",
+        body: JSON.stringify({ message: msg }),
+      });
+
+      console.log("💌 MESSAGE SAVED");
+    } catch (err) {
+      console.error("❌ Message save failed:", err.message);
+    }
+  };
+
+  // 🔥 STEP 4: FINALIZE
+  const handleFinalize = async () => {
+    if (!message) {
+      alert("Please generate message first!");
+      return;
+    }
+
+    if (!bouquetId) {
+      alert("Bouquet not saved properly!");
+      return;
+    }
+
+    try {
+      await authFetch(`/bouquets/${bouquetId}/finalize`, {
+        method: "PUT",
+        body: JSON.stringify({
+          digitalBouquetUrl: "generated-url-here",
+        }),
+      });
+
+      console.log("🎉 BOUQUET FINALIZED");
+
+      navigate("/bouquetResult", {
+        state: { flowers, addOns, message, style },
+      });
+
+    } catch (err) {
+      console.error("❌ Finalization failed:", err.message);
+      alert(err.message);
     }
   };
 
@@ -86,9 +171,9 @@ const Recommend = () => {
 
             <RecommendedBouquet flowers={flowers} />
 
-            <AddonSelector addOns={addOns} setAddOns={setAddOns} />
+            <AddonSelector addOns={addOns} setAddOns={handleAddOnChange} />
 
-            {/* 🎨 STYLE SELECTOR */}
+            {/* STYLE */}
             <div className="text-center">
               <h2 className="text-lg font-semibold text-gray-700 mb-2">
                 Select Message Style 🎨
@@ -110,23 +195,14 @@ const Recommend = () => {
               addOns={addOns}
               style={style}
               message={message}
-              setMessage={setMessage}
+              setMessage={handleMessageSave}
               occasion={formdata.occasion}
               relationship={formdata.relationship}
               personality={formdata.personality}
             />
 
             <button
-              onClick={() => {
-                if (!message) {
-                  alert("Please generate message first!");
-                  return;
-                }
-
-                navigate("/bouquetResult", {
-                  state: { flowers, addOns, message, style },
-                });
-              }}
+              onClick={handleFinalize}
               className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
             >
               Create Digital Bouquet 💐

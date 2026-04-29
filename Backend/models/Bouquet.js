@@ -17,7 +17,7 @@ const bouquetSchema = new mongoose.Schema({
 
   flowers: [flowerSchema], // dynamic array
 
-  gifts: [String], // or object if needed
+  addOns: [String], // or object if needed
 
   message: String,
 
