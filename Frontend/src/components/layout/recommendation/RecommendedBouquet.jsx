@@ -24,31 +24,45 @@ const RecommendedBouquet = ({ flowers }) => {
 
       return "https://dummyimage.com/300x300/cccccc/000000&text=No+Image";
     } catch (err) {
-      console.error("Image fetch error:", err);
+      console.error("❌ Image fetch error:", err);
       return "https://dummyimage.com/300x300/cccccc/000000&text=Error";
     }
   };
 
-  // 🔥 Load images
+  // 🔥 Load images (parallel + fixed keys)
   useEffect(() => {
     const loadImages = async () => {
-      let temp = {};
+      try {
+        const promises = flowers.map(async (flower) => {
+          const cleanName = flower.name.split("(")[0].trim();
 
-      for (let flower of flowers) {
-        const name = flower.name; // ✅ FIX
+          const img = await fetchFlowerImage(cleanName);
 
-        const cleanName = name.split("(")[0].trim(); // ✅ SAFE
+          return { key: cleanName, img };
+        });
 
-        const img = await fetchFlowerImage(cleanName);
+        const results = await Promise.all(promises);
 
-        temp[name] = img;
+        const temp = {};
+        results.forEach(({ key, img }) => {
+          temp[key] = img;
+        });
+
+        console.log("🖼️ Loaded Images (temp):", temp);
+
+        setImages(temp);
+      } catch (err) {
+        console.error("❌ Image loading failed:", err);
       }
-
-      setImages(temp);
     };
 
     if (flowers.length) loadImages();
   }, [flowers]);
+
+  // 🔥 Log FINAL images state (this is what UI actually uses)
+  useEffect(() => {
+    console.log("🖼️ Loaded Images (state):", images);
+  }, [images]);
 
   if (!flowers.length) return null;
 
@@ -60,8 +74,7 @@ const RecommendedBouquet = ({ flowers }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {flowers.map((flower, index) => {
-          const name = flower.name; // ✅ FIX
-          const cleanName = name.split("(")[0].trim();
+          const cleanName = flower.name.split("(")[0].trim();
 
           return (
             <div
@@ -70,12 +83,15 @@ const RecommendedBouquet = ({ flowers }) => {
             >
               <img
                 src={
-                  images[name] ||
-                  flower.image || // ✅ fallback to DB image
-                  "https://dummyimage.com/300x300/cccccc/000000&text=Loading"
+                  images[cleanName] ||
+                  "https://dummyimage.com/300x300/eeeeee/000000&text=Loading..."
                 }
                 alt={cleanName}
                 className="w-full h-40 object-cover rounded"
+                onError={(e) => {
+                  e.target.src =
+                    "https://dummyimage.com/300x300/ffcccc/000000&text=Error";
+                }}
               />
 
               <h3 className="text-lg font-semibold text-pink-600 mt-3">

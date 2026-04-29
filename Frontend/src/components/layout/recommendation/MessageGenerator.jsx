@@ -39,18 +39,40 @@ const MessageGenerator = ({
         }
       );
 
-      // ✅ FIX: use messages array
-      setMessages(response.data.messages || []);
+      console.log("💌 API RESPONSE:", response.data);
+
+      const msgs = response?.data?.messages;
+
+      // ✅ Validate response
+      if (!msgs || !Array.isArray(msgs) || msgs.length === 0) {
+        throw new Error("Empty messages from API");
+      }
+
+      setMessages(msgs);
 
     } catch (err) {
-      console.error(err);
-      setError("Server busy. Please try again 🔄");
+      console.error("❌ Message generation failed:", err.message);
+
+      // ✅ FALLBACK MESSAGES
+      const fallbackMessages = [
+        "Wishing you happiness and joy with these beautiful flowers 🌸",
+        "May these blooms brighten your day and bring a smile 😊",
+        "A small bouquet filled with love, just for you 💐",
+      ];
+
+      setMessages(fallbackMessages);
+
+      // auto-select first message
+      setSelectedMessage(fallbackMessages[0]);
+      setMessage(fallbackMessages[0]);
+
+      setError(""); // clear error since we handled it
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ When user selects message → send to parent
+  // ✅ When user selects message
   const handleSelect = (msg) => {
     setSelectedMessage(msg);
     setMessage(msg);
@@ -75,7 +97,7 @@ const MessageGenerator = ({
         {loading ? "Generating..." : "Generate Messages"}
       </button>
 
-      {/* ❌ ERROR */}
+      {/* ❌ ERROR (only if no fallback triggered) */}
       {error && (
         <div className="mt-4">
           <p className="text-red-500">{error}</p>
