@@ -6,29 +6,32 @@ const MessageGenerator = ({
   addOns,
   style,
   setMessage,
-  message,
   occasion,
   relationship,
   personality,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [selectedMessage, setSelectedMessage] = useState("");
 
   const generateMessage = async () => {
     try {
       if (!flowers.length) {
-        setMessage("Please select bouquet first.");
+        setError("Please select bouquet first.");
         return;
       }
 
       setLoading(true);
       setError("");
+      setMessages([]);
+      setSelectedMessage("");
 
       const response = await axios.post(
         "http://localhost:5000/api/message/generate",
         {
           flowers,
-          addOns: addOns || [], // ✅ SAFE FIX
+          addOns: addOns || [],
           style,
           occasion,
           relationship,
@@ -36,7 +39,8 @@ const MessageGenerator = ({
         }
       );
 
-      setMessage(response.data.message);
+      // ✅ FIX: use messages array
+      setMessages(response.data.messages || []);
 
     } catch (err) {
       console.error(err);
@@ -46,12 +50,19 @@ const MessageGenerator = ({
     }
   };
 
+  // ✅ When user selects message → send to parent
+  const handleSelect = (msg) => {
+    setSelectedMessage(msg);
+    setMessage(msg);
+  };
+
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold mb-4 text-rose-500">
         Generate Message 💌
       </h2>
 
+      {/* 🔘 BUTTON */}
       <button
         onClick={generateMessage}
         disabled={loading}
@@ -61,9 +72,10 @@ const MessageGenerator = ({
             : "bg-purple-500 hover:bg-purple-600"
         }`}
       >
-        {loading ? "Generating..." : "Generate Message"}
+        {loading ? "Generating..." : "Generate Messages"}
       </button>
 
+      {/* ❌ ERROR */}
       {error && (
         <div className="mt-4">
           <p className="text-red-500">{error}</p>
@@ -76,9 +88,33 @@ const MessageGenerator = ({
         </div>
       )}
 
-      {message && !loading && (
-        <p className="mt-4 bg-white/50 p-4 rounded-xl shadow">
-          {message}
+      {/* 💌 MESSAGE OPTIONS */}
+      {messages.length > 0 && !loading && (
+        <div className="mt-6 space-y-3">
+          <h3 className="font-semibold text-gray-700">
+            Choose Your Message 💬
+          </h3>
+
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              onClick={() => handleSelect(msg)}
+              className={`cursor-pointer p-3 rounded-xl border transition ${
+                selectedMessage === msg
+                  ? "bg-pink-200 border-pink-400"
+                  : "bg-white hover:bg-gray-100"
+              }`}
+            >
+              {msg}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ✅ SELECTED MESSAGE PREVIEW */}
+      {selectedMessage && (
+        <p className="mt-6 bg-white/50 p-4 rounded-xl shadow italic">
+          "{selectedMessage}"
         </p>
       )}
     </div>

@@ -169,6 +169,7 @@ const Recommend = () => {
         {flowers.length > 0 && !loading && (
           <div className="max-w-5xl mx-auto mt-12 space-y-10">
 
+            {/* 🌸 Bouquet */}
             <RecommendedBouquet flowers={flowers} />
 
             <AddonSelector addOns={addOns} setAddOns={handleAddOnChange} />
@@ -190,6 +191,7 @@ const Recommend = () => {
               </select>
             </div>
 
+            {/* 💌 MESSAGE GENERATOR */}
             <MessageGenerator
               flowers={flowers}
               addOns={addOns}
@@ -201,6 +203,7 @@ const Recommend = () => {
               personality={formdata.personality}
             />
 
+            {/* 🚀 NAVIGATION */}
             <button
               onClick={handleFinalize}
               className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"

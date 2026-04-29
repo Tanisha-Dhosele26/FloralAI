@@ -1,8 +1,8 @@
 const { model } = require("../config/gemini");
 const asyncHandler = require("../utils/asyncHandler");
 const retry = require("../utils/retry");
-const cache = new Map(); // 🔥 simple in-memory cache
 
+const cache = new Map();
 
 // ⏱️ timeout helper
 const withTimeout = (promise, ms) => {
@@ -37,7 +37,7 @@ Occasion: ${occasion}
 Relationship: ${relationship}
 Personality: ${personality}
 
-Return ONLY flower names separated by commas.
+Return ONLY comma-separated flower names.
 Example: Rose, Lily, Tulip
     `;
   }
@@ -52,6 +52,7 @@ Guidelines:
 - Friendly → cheerful 😊
 - Formal → respectful 🎩
 
+Details:
 Flowers: ${flowers.join(", ")}
 Occasion: ${occasion}
 Relationship: ${relationship}
@@ -63,52 +64,54 @@ Return ONLY the message.
     `;
   }
 
-  console.log("🧠 PROMPT SENT TO GEMINI:", prompt);
-
   let text = "";
 
   try {
+    const cacheKey = prompt;
+
+    // 🔥 CACHE CHECK
+    if (cache.has(cacheKey)) {
+      console.log("⚡ CACHE HIT");
+      return res.json({ message: cache.get(cacheKey) });
+    }
+
     // 🔥 RETRY + TIMEOUT + GEMINI CALL
     const result = await retry(
       async () => {
         return await withTimeout(
           model.generateContent(prompt),
-          5000 // ⏱️ 5 sec timeout
+          5000
         );
       },
-      3,      // 🔁 retries
-      1000    // ⏳ initial delay
+      3,
+      1000
     );
 
     console.log("🤖 RAW GEMINI RESULT:", result);
 
-    if (result && result.response) {
+    if (result?.response) {
       text = result.response.text();
     } else {
       throw new Error("Invalid Gemini response");
     }
 
+    // 🔥 SAVE CACHE
+    cache.set(cacheKey, text);
+
+    return res.json({ message: text });
+
   } catch (aiError) {
     console.error("❌ GEMINI FINAL FAILURE:", aiError.message);
 
-    const isQuotaError =
-    aiError.message?.includes("Quota exceeded");
-
-    if (isQuotaError) {
-      console.warn("⚠️ Gemini quota exceeded → using fallback");
-    } 
-
-    // ✅ FALLBACK (safe UX)
+    // 🔥 FALLBACK
     if (!flowers || flowers.length === 0) {
       text = "Rose, Lily, Tulip";
     } else {
       text = "💐 Wishing you happiness, love, and beautiful moments!";
     }
+
+    return res.json({ message: text });
   }
-
-  console.log("✅ FINAL TEXT SENT:", text);
-
-  res.json({ message: text });
 });
 
 module.exports = { generateMessage };
