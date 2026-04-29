@@ -27,9 +27,11 @@ app.use(
 app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");
+const flowerRoutes = require("./routes/flowerRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
 app.use("/api/auth", authRoutes);
+app.use("/api/flowers", flowerRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/bouquets", bouquetRoutes);
 app.use(errorHandler);

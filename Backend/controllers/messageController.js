@@ -26,31 +26,9 @@ const generateMessage = asyncHandler(async (req, res) => {
     personality = "",
   } = req.body;
 
-  let prompt;
-
-  // 🌸 FLOWER GENERATION
-  if (!flowers || flowers.length === 0) {
-    prompt = `
-Suggest 3 to 5 flowers for:
-
-Occasion: ${occasion}
-Relationship: ${relationship}
-Personality: ${personality}
-
-Return ONLY comma-separated flower names.
-Example: Rose, Lily, Tulip
-    `;
-  }
-
-  // 💌 MESSAGE GENERATION
-  else {
-    prompt = `
-Write a ${style} style message for a bouquet.
-
-Guidelines:
-- Romantic → emotional ❤️
-- Friendly → cheerful 😊
-- Formal → respectful 🎩
+  // 💌 PROMPT → generate MULTIPLE messages
+  const prompt = `
+Generate 3 different ${style} style messages for a flower bouquet.
 
 Details:
 Flowers: ${flowers.join(", ")}
@@ -59,58 +37,67 @@ Relationship: ${relationship}
 Personality: ${personality}
 Add-ons: ${(addOns || []).join(", ")}
 
-Keep it short.
-Return ONLY the message.
-    `;
-  }
+Rules:
+- Each message should be 1–2 lines
+- Emotional and natural
+- No numbering
+- Separate each message with a newline
 
-  let text = "";
+Return ONLY messages.
+`;
 
   try {
-    const cacheKey = prompt;
-
     // 🔥 CACHE CHECK
-    if (cache.has(cacheKey)) {
+    if (cache.has(prompt)) {
       console.log("⚡ CACHE HIT");
-      return res.json({ message: cache.get(cacheKey) });
+      return res.json({ messages: cache.get(prompt) });
     }
 
-    // 🔥 RETRY + TIMEOUT + GEMINI CALL
+    // 🔥 GEMINI CALL
     const result = await retry(
       async () => {
-        return await withTimeout(
-          model.generateContent(prompt),
-          5000
-        );
+        return await withTimeout(model.generateContent(prompt), 5000);
       },
       3,
       1000
     );
 
-    console.log("🤖 RAW GEMINI RESULT:", result);
+    const response = result?.response;
 
-    if (result?.response) {
-      text = result.response.text();
-    } else {
-      throw new Error("Invalid Gemini response");
+    if (!response) {
+      throw new Error("No response from Gemini");
     }
 
-    // 🔥 SAVE CACHE
-    cache.set(cacheKey, text);
+    const text = (await response.text()).trim();
 
-    return res.json({ message: text });
+    console.log("🤖 GEMINI TEXT:", text);
 
-  } catch (aiError) {
-    console.error("❌ GEMINI FINAL FAILURE:", aiError.message);
+    // ✅ CONVERT TEXT → ARRAY
+    const messages = text
+      .split("\n")
+      .map((msg) => msg.trim())
+      .filter((msg) => msg.length > 0);
 
-    // 🔥 FALLBACK
-    if (!flowers || flowers.length === 0) {
-      text = "Rose, Lily, Tulip";
-    } else {
-      text = "💐 Wishing you happiness, love, and beautiful moments!";
+    if (messages.length === 0) {
+      throw new Error("Empty messages");
     }
 
-    return res.json({ message: text });
+    // 🔥 CACHE
+    cache.set(prompt, messages);
+
+    return res.json({ messages });
+
+  } catch (error) {
+    console.error("❌ GEMINI ERROR:", error.message);
+
+    // ✅ FALLBACK ARRAY
+    const fallbackMessages = [
+      `💐 Wishing you a beautiful ${occasion || "special"} filled with love and happiness!`,
+      "🌸 May these flowers bring joy and warmth to your heart.",
+      "💖 A little bouquet to brighten your day and make you smile.",
+    ];
+
+    return res.json({ messages: fallbackMessages });
   }
 });
 
