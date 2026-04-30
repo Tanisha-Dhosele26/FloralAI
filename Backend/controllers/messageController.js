@@ -1,116 +1,104 @@
 const { model } = require("../config/gemini");
+const asyncHandler = require("../utils/asyncHandler");
+const retry = require("../utils/retry");
 
-const generateMessage = async (req, res) => {
-  try {
-    const {
-      flowers = [],
-      addOns = [],
-      style = "Romantic",
-      occasion = "",
-      relationship = "",
-      personality = "",
-    } = req.body;
+const cache = new Map();
 
-    let prompt;
+// ⏱️ timeout helper
+const withTimeout = (promise, ms) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini timeout")), ms)
+    ),
+  ]);
+};
 
-    // 🌸 FLOWER GENERATION
-    if (!flowers || flowers.length === 0) {
-      prompt = `
-Suggest 2 to 4 flowers for:
+const generateMessage = asyncHandler(async (req, res) => {
+  console.log("🔥 REQUEST BODY:", req.body);
 
-Occasion: ${occasion}
-Relationship: ${relationship}
-Personality: ${personality}
+  const {
+    flowers = [],
+    addOns = [],
+    style = "Romantic",
+    occasion = "",
+    relationship = "",
+    personality = "",
+  } = req.body;
 
-Return ONLY comma-separated flower names.
-Example: Rose, Lily, Tulip
-      `;
-    }
-
-    // 💌 MULTIPLE MESSAGE GENERATION (UPGRADED)
-    else {
-      prompt = `
-Generate 3 ${style} bouquet messages.
-
-Guidelines:
-- Romantic → emotional ❤️
-- Friendly → cheerful 😊
-- Formal → respectful 🎩
+  // 💌 PROMPT → generate MULTIPLE messages
+  const prompt = `
+Generate 3 different ${style} style messages for a flower bouquet.
 
 Details:
 Flowers: ${flowers.join(", ")}
 Occasion: ${occasion}
 Relationship: ${relationship}
 Personality: ${personality}
-Add-ons: ${(addOns || []).join(", ") || "none"}
+Add-ons: ${(addOns || []).join(", ")}
 
 Rules:
-- Keep each message short (2-3 lines)
-- Make each message unique
-- Return ONLY in this format:
+- Each message should be 1–2 lines
+- Emotional and natural
+- No numbering
+- Separate each message with a newline
 
-1. message one
-2. message two
-3. message three
-      `;
+Return ONLY messages.
+`;
+
+  try {
+    // 🔥 CACHE CHECK
+    if (cache.has(prompt)) {
+      console.log("⚡ CACHE HIT");
+      return res.json({ messages: cache.get(prompt) });
     }
 
-    let text = "";
+    // 🔥 GEMINI CALL
+    const result = await retry(
+      async () => {
+        return await withTimeout(model.generateContent(prompt), 5000);
+      },
+      3,
+      1000
+    );
 
-    try {
-      const result = await model.generateContent(prompt);
+    const response = result?.response;
 
-      if (result && result.response) {
-        text = result.response.text();
-      } else {
-        throw new Error("Invalid Gemini response");
-      }
-
-    } catch (aiError) {
-      console.error("Gemini Error:", aiError.message);
-
-      // 🔥 FALLBACK SAFE
-      if (!flowers || flowers.length === 0) {
-        return res.json({
-          flowers: ["Rose", "Lily", "Tulip"],
-        });
-      } else {
-        return res.json({
-          messages: [
-            "💐 Wishing you happiness and beautiful moments!",
-            "🌸 May your day be filled with love and smiles!",
-            "✨ Sending warmth, joy, and heartfelt wishes!",
-          ],
-        });
-      }
+    if (!response) {
+      throw new Error("No response from Gemini");
     }
 
-    // 🌸 RETURN FLOWERS
-    if (!flowers || flowers.length === 0) {
-      const flowerList = text
-        .replace(/\n/g, "")
-        .split(",")
-        .map((f) => f.trim())
-        .filter((f) => f);
+    const text = (await response.text()).trim();
 
-      return res.json({ flowers: flowerList });
-    }
+    console.log("🤖 GEMINI TEXT:", text);
 
-    // 💌 RETURN MULTIPLE MESSAGES
+    // ✅ CONVERT TEXT → ARRAY
     const messages = text
-      .split(/\d+\./)
-      .map((m) => m.trim())
-      .filter((m) => m);
+      .split("\n")
+      .map((msg) => msg.trim())
+      .filter((msg) => msg.length > 0);
 
-    res.json({ messages });
+    if (messages.length === 0) {
+      throw new Error("Empty messages");
+    }
+
+    // 🔥 CACHE
+    cache.set(prompt, messages);
+
+    return res.json({ messages });
 
   } catch (error) {
-    console.error("Server Error:", error.message);
+    console.error("❌ GEMINI ERROR:", error.message);
 
-    res.status(500).json({
-      message: "Server error. Please try again.",
-    });
+    // ✅ FALLBACK ARRAY
+    const fallbackMessages = [
+      `💐 Wishing you a beautiful ${occasion || "special"} filled with love and happiness!`,
+      "🌸 May these flowers bring joy and warmth to your heart.",
+      "💖 A little bouquet to brighten your day and make you smile.",
+    ];
+
+    return res.json({ messages: fallbackMessages });
   }
-};
+});
 
 module.exports = { generateMessage };

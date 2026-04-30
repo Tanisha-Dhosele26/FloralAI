@@ -5,55 +5,64 @@ const RecommendedBouquet = ({ flowers }) => {
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
-  // 🔥 Fetch image from Unsplash API
-  const fetchFlowerImage = async (flower) => {
+  // 🔥 Fetch image from Unsplash
+  const fetchFlowerImage = async (flowerName) => {
     try {
-      // ❌ If API key missing, skip call
       if (!ACCESS_KEY) {
-        console.error("Missing Unsplash API Key");
         return "https://dummyimage.com/300x300/cccccc/000000&text=No+Image";
       }
 
       const res = await fetch(
-        `https://api.unsplash.com/search/photos?query=${flower}&client_id=${ACCESS_KEY}`
+        `https://api.unsplash.com/search/photos?query=${flowerName}&client_id=${ACCESS_KEY}`
       );
-
-      if (!res.ok) {
-        throw new Error("API request failed");
-      }
 
       const data = await res.json();
 
-      // ✅ Safe check
-      if (data.results && data.results.length > 0) {
+      if (data.results?.length > 0) {
         return data.results[0].urls.regular;
-      } else {
-        return "https://dummyimage.com/300x300/cccccc/000000&text=No+Image";
       }
+
+      return "https://dummyimage.com/300x300/cccccc/000000&text=No+Image";
     } catch (err) {
-      console.error("Image fetch error:", err);
+      console.error("❌ Image fetch error:", err);
       return "https://dummyimage.com/300x300/cccccc/000000&text=Error";
     }
   };
 
-  // 🔥 Load images when flowers change
+  // 🔥 Load images (parallel + fixed keys)
   useEffect(() => {
     const loadImages = async () => {
-      let temp = {};
+      try {
+        const promises = flowers.map(async (flower) => {
+          const cleanName = flower.name.split("(")[0].trim();
 
-      for (let flower of flowers) {
-        const cleanFlower = flower.split("(")[0].trim();
+          const img = await fetchFlowerImage(cleanName);
 
-        const img = await fetchFlowerImage(cleanFlower);
+          return { key: cleanName, img };
+        });
 
-        temp[flower] = img;
+        const results = await Promise.all(promises);
+
+        const temp = {};
+        results.forEach(({ key, img }) => {
+          temp[key] = img;
+        });
+
+        console.log("🖼️ Loaded Images (temp):", temp);
+
+        setImages(temp);
+      } catch (err) {
+        console.error("❌ Image loading failed:", err);
       }
-
-      setImages(temp);
     };
 
     if (flowers.length) loadImages();
   }, [flowers]);
+
+  // 🔥 Log FINAL images state (this is what UI actually uses)
+  useEffect(() => {
+    console.log("🖼️ Loaded Images (state):", images);
+  }, [images]);
 
   if (!flowers.length) return null;
 
@@ -65,7 +74,7 @@ const RecommendedBouquet = ({ flowers }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {flowers.map((flower, index) => {
-          const cleanFlower = flower.split("(")[0].trim();
+          const cleanName = flower.name.split("(")[0].trim();
 
           return (
             <div
@@ -74,15 +83,19 @@ const RecommendedBouquet = ({ flowers }) => {
             >
               <img
                 src={
-                  images[flower] ||
-                  "https://dummyimage.com/300x300/cccccc/000000&text=Loading"
+                  images[cleanName] ||
+                  "https://dummyimage.com/300x300/eeeeee/000000&text=Loading..."
                 }
-                alt={cleanFlower}
+                alt={cleanName}
                 className="w-full h-40 object-cover rounded"
+                onError={(e) => {
+                  e.target.src =
+                    "https://dummyimage.com/300x300/ffcccc/000000&text=Error";
+                }}
               />
 
               <h3 className="text-lg font-semibold text-pink-600 mt-3">
-                {cleanFlower}
+                {cleanName}
               </h3>
             </div>
           );
