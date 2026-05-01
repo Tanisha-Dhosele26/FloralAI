@@ -19,14 +19,12 @@ const Recommend = () => {
 
   const navigate = useNavigate();
 
-  // 🌸 STEP 1: GENERATE FLOWERS + IMAGES
+  // 🌸 STEP 1: FLOWERS + IMAGES
   const handleRecommend = async (data) => {
     try {
-      console.log("🟡 STEP 1: Function triggered");
       setLoading(true);
       setFormData(data);
 
-      // 🌸 Call backend (Gemini)
       const res = await fetch("http://localhost:5000/api/flowers/generate", {
         method: "POST",
         headers: {
@@ -36,13 +34,12 @@ const Recommend = () => {
       });
 
       const result = await res.json();
-      console.log("🌸 Flowers from API:", result);
 
       if (!result?.flowers) {
         throw new Error("No flowers received");
       }
 
-      // 🌼 Fetch images from Unsplash
+      // 🌼 FETCH IMAGES HERE (ONLY ONCE)
       const flowersWithImages = await Promise.all(
         result.flowers.map(async (flower) => {
           try {
@@ -58,8 +55,7 @@ const Recommend = () => {
                 imgData?.urls?.small ||
                 "https://dummyimage.com/300x300/cccccc/000000&text=No+Image",
             };
-          } catch (err) {
-            console.error("Image fetch failed:", err);
+          } catch {
             return {
               name: flower,
               image:
@@ -69,11 +65,9 @@ const Recommend = () => {
         })
       );
 
-      console.log("🎨 Final flowers:", flowersWithImages);
-
       setFlowers(flowersWithImages);
 
-      // 🔐 OPTIONAL: Save to DB (only if logged in)
+      // 🔐 Save to DB (optional)
       try {
         const saved = await authFetch("/bouquets", {
           method: "POST",
@@ -83,21 +77,20 @@ const Recommend = () => {
           }),
         });
 
-        console.log("✅ Bouquet saved:", saved);
         setBouquetId(saved.bouquetId);
-      } catch (err) {
-        console.warn("⚠️ Not logged in → skipping DB save");
+      } catch {
+        console.warn("Not logged in → skipping DB save");
       }
 
     } catch (err) {
-      console.error("❌ Error:", err.message);
+      console.error(err);
       alert("Failed to generate bouquet");
     } finally {
       setLoading(false);
     }
   };
 
-  // 💌 STEP 2: SAVE MESSAGE
+  // 💌 SAVE MESSAGE
   const handleMessageSave = async (msg) => {
     setMessage(msg);
 
@@ -108,14 +101,12 @@ const Recommend = () => {
         method: "PUT",
         body: JSON.stringify({ message: msg }),
       });
-
-      console.log("💌 Message saved");
     } catch (err) {
-      console.error("❌ Message save failed:", err.message);
+      console.error(err);
     }
   };
 
-  // 🎁 STEP 3: ADD-ONS
+  // 🎁 ADDONS
   const handleAddOnChange = async (newAddOns) => {
     setAddOns(newAddOns);
 
@@ -126,14 +117,12 @@ const Recommend = () => {
         method: "PUT",
         body: JSON.stringify({ addOns: newAddOns }),
       });
-
-      console.log("🎁 Add-ons updated");
     } catch (err) {
-      console.error("❌ Add-ons update failed:", err.message);
+      console.error(err);
     }
   };
 
-  // 🚀 STEP 4: FINALIZE
+  // 🚀 FINALIZE
   const handleFinalize = async () => {
     if (!message) {
       alert("Please select a message first!");
@@ -155,61 +144,39 @@ const Recommend = () => {
       });
 
     } catch (err) {
-      console.error("❌ Finalize failed:", err.message);
+      console.error(err);
       alert("Finalization failed");
     }
   };
 
   return (
-    <div
-      className="min-h-screen py-20 px-4 bg-cover bg-center relative"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1646451711039-6a97dc8dfb45?q=80&w=1074&auto=format&fit=crop')",
-      }}
-    >
-      <div className="absolute inset-0 bg-white/60 backdrop-blur-sm"></div>
+    <div className="min-h-screen py-20 px-4 relative">
 
       <div className="relative z-10">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 text-gray-700">
+        <h1 className="text-3xl font-bold text-center mb-10">
           Get Your Perfect Bouquet 🌸
         </h1>
 
-        {/* FORM */}
-        <div className="max-w-xl mx-auto bg-white/30 backdrop-blur-md border rounded-3xl p-6 shadow-xl">
+        <div className="max-w-xl mx-auto bg-white/30 p-6 rounded-3xl">
           <RecommendationForm onRecommend={handleRecommend} />
         </div>
 
-        {/* LOADING */}
         {loading && (
-          <p className="text-center mt-6 text-gray-600">
-            Generating bouquet... 🌸
-          </p>
+          <p className="text-center mt-6">Generating bouquet... 🌸</p>
         )}
 
-        {/* RESULT */}
         {flowers.length > 0 && !loading && (
           <div className="max-w-5xl mx-auto mt-12 space-y-10">
 
-            {/* 🌸 Bouquet */}
             <RecommendedBouquet flowers={flowers} />
 
-            {/* 🎁 Add-ons */}
-            <AddonSelector
-              addOns={addOns}
-              setAddOns={handleAddOnChange}
-            />
+            <AddonSelector addOns={addOns} setAddOns={handleAddOnChange} />
 
-            {/* 🎨 STYLE */}
             <div className="text-center">
-              <h2 className="text-lg font-semibold mb-2">
-                Message Style 🎨
-              </h2>
-
               <select
                 value={style}
                 onChange={(e) => setStyle(e.target.value)}
-                className="px-4 py-2 border rounded-lg shadow"
+                className="px-4 py-2 border rounded"
               >
                 <option value="Romantic">Romantic ❤️</option>
                 <option value="Friendly">Friendly 😊</option>
@@ -217,7 +184,6 @@ const Recommend = () => {
               </select>
             </div>
 
-            {/* 💌 MESSAGE */}
             <MessageGenerator
               flowers={flowers}
               addOns={addOns}
@@ -228,10 +194,9 @@ const Recommend = () => {
               personality={formdata.personality}
             />
 
-            {/* 🚀 FINAL BUTTON */}
             <button
               onClick={handleFinalize}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
+              className="w-full bg-green-500 text-white py-3 rounded-xl"
             >
               Create Digital Bouquet 💐
             </button>
