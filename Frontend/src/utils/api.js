@@ -8,14 +8,14 @@ export const authFetch = async (endpoint, options = {}) => {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
-      Authorization: `Bearer ${token}`, // ✅ centralized
+      ...(token && { Authorization: `Bearer ${token}` }), // only if token exists
     },
   });
 
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.msg || data.error || "Request failed");
+    throw new Error(data.msg || data.message || "Request failed");
   }
 
   return data;

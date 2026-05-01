@@ -51,11 +51,26 @@ const RecommendationForm = ({ onRecommend }) => {
         <option value="">Select Relationship</option>
         <option>Mother</option>
         <option>Father</option>
-        <option>Friend</option>
-        <option>Teacher</option>
-        <option>Boss</option>
+        <option>Parents</option>
+        <option>GrandFather</option>
+        <option>GrandMother</option>
+        <option>Spouse</option>
         <option>Partner</option>
         <option>Sibling</option>
+        <option>Elder Brother</option>
+        <option>Elder Sister</option>
+        <option>Younger Brother</option>
+        <option>Younger Sister</option>
+        <option>BestFriend</option>
+        <option>Friend</option>
+        <option>Teacher</option>
+        <option>Student</option>
+        <option>Boss</option>
+        <option>Colleague</option>
+        <option>Uncle</option>
+        <option>Aunt</option>
+        <option>Parents</option>
+
       </select>
 
       {/* 🧠 PERSONALITY */}

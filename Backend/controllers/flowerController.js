@@ -18,7 +18,7 @@ const generateFlowers = asyncHandler(async (req, res) => {
   const { occasion = "", relationship = "", personality = "" } = req.body;
 
   const prompt = `
-Suggest 3 to 5 flowers for:
+Suggest 3 to 4 flowers for:
 Occasion: ${occasion}
 Relationship: ${relationship}
 Personality: ${personality}
