@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 // MUI Icons
@@ -11,8 +11,35 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user")) || null;
+  // ✅ Load user safely
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser && storedUser !== "undefined") {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Invalid user JSON");
+        setUser(null);
+      }
+    }
+  }, []);
+
+  // ✅ Listen for login/logout updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   return (
     <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/30 border-b border-white/40 shadow-md">
@@ -27,25 +54,24 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
 
-          <li className="hover:text-pink-500 transition flex items-center gap-1">
+          <li className="hover:text-pink-500 flex items-center gap-1">
             <Link to="/" className="flex items-center gap-1">
               <HomeIcon fontSize="small" /> Home
             </Link>
           </li>
 
-          <li className="hover:text-pink-500 transition flex items-center gap-1">
+          <li className="hover:text-pink-500 flex items-center gap-1">
             <Link to="/recommend" className="flex items-center gap-1">
               <AutoAwesomeIcon fontSize="small" /> Recommendation
             </Link>
           </li>
 
-          <li className="hover:text-pink-500 transition flex items-center gap-1">
+          <li className="hover:text-pink-500 flex items-center gap-1">
             <Link to="/encyclopedia" className="flex items-center gap-1">
               <MenuBookIcon fontSize="small" /> Encyclopedia
             </Link>
           </li>
 
-          
           {user ? (
             <li className="hover:text-pink-500">
               <Link to="/profile">Profile</Link>

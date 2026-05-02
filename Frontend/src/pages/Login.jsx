@@ -15,35 +15,45 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      // store token
-      localStorage.setItem("token", data.token);
+      if (res.ok) {
+  localStorage.setItem("token", data.token);
 
-      alert("Login successful 🎉");
-      navigate("/"); // or dashboard
-    } else {
-      alert(data.message || "Login failed");
+  // ✅ ADD THIS (VERY IMPORTANT)
+  localStorage.setItem(
+    "user",
+    JSON.stringify({
+      name: form.email.split("@")[0], // temporary name
+      email: form.email,
+    })
+  );
+
+  window.dispatchEvent(new Event("storage")); // 🔥 force navbar update
+
+  alert("Login successful 🎉");
+  navigate("/");
+}
+       else {
+        alert(data.message || "Login failed");
+      }
+
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong");
     }
-
-  } catch (error) {
-    console.log(error);
-    alert("Something went wrong");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white px-4">

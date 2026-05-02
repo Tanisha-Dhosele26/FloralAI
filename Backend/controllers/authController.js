@@ -48,7 +48,6 @@ exports.signup = async (req, res) => {
 
 
 // login
-
 const jwt = require("jsonwebtoken");
 
 exports.login = async (req, res) => {
@@ -57,19 +56,16 @@ exports.login = async (req, res) => {
 
     console.log("Login request:", req.body);
 
-    // check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    // compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // generate JWT token
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
@@ -78,9 +74,15 @@ exports.login = async (req, res) => {
 
     console.log("Login successful");
 
+    // ✅ IMPORTANT FIX
     res.status(200).json({
       message: "Login successful",
       token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
 
   } catch (error) {
