@@ -195,12 +195,20 @@ const Recommend = () => {
             />
 
             <button
-              onClick={handleFinalize}
-              className="w-full bg-green-500 text-white py-3 rounded-xl"
-            >
-              Create Digital Bouquet 💐
-            </button>
+  onClick={() => {
+    if (!message) {
+      alert("Please select a message first!");
+      return;
+    }
 
+    navigate("/cardDesign", {
+      state: { flowers, addOns, message },
+    });
+  }}
+  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
+>
+  Create Bouquet Card 💐
+</button>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import Navbar from "./components/layout/Navbar";
 import Home from "./pages/Home";
 import Recommend from "./pages/Recommend";
 import Footer from "./components/layout/Footer";
-
+import CardDesignPage from "./pages/CardDesignPage";
 import Encyclopedia from "./pages/Encyclopedia";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -25,7 +25,7 @@ const App = () => {
           <Route path= "/signup" element={<Signup/>} />
           <Route path= "/profile" element={<Profile/>} />
           <Route path="/myBouquets" element={<MyBouquets />} />
-
+          <Route path="/cardDesign" element={<CardDesignPage />} />
         </Routes>
        
     </>
