@@ -28,7 +28,7 @@ const generateMessage = asyncHandler(async (req, res) => {
 
   // 💌 PROMPT → generate MULTIPLE messages
   const prompt = `
-Generate 3 different ${style} style messages for a flower bouquet.
+Generate 3 different ${style} style messages for a flower bouquet .
 
 Details:
 Flowers: ${flowers.join(", ")}
@@ -38,7 +38,7 @@ Personality: ${personality}
 Add-ons: ${(addOns || []).join(", ")}
 
 Rules:
-- Each message should be 1–2 lines
+- Each message should be 2-3 lines
 - Emotional and natural
 - No numbering
 - Separate each message with a newline
