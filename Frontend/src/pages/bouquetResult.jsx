@@ -6,20 +6,21 @@ import confetti from "canvas-confetti";
 const BouquetResult = () => {
   const location = useLocation();
 
-  const {
-    flowers = [],
-    addOns = [],
-    message = "",
-    selectedCard = {},
-  } = location.state || {};
+  const flowers = location.state?.flowers || [];
+  const addOns = location.state?.addOns || [];
+  const message = location.state?.message || "";
+  const selectedCard = location.state?.selectedCard || {
+    bg: "bg-pink-300",
+    name: "Default Card",
+    id: "default",
+  };
 
   const cardRef = useRef();
 
-  // 🎉 CONFETTI ON LOAD
   useEffect(() => {
-    if (!selectedCard) return;
+    if (!selectedCard?.id) return;
 
-    let colors = ["#ff69b4", "#ff1493"]; // default romantic
+    let colors = ["#ff69b4", "#ff1493"];
 
     if (selectedCard.id === "luxury") {
       colors = ["#FFD700", "#C0C0C0"];
@@ -37,10 +38,7 @@ const BouquetResult = () => {
   }, [selectedCard]);
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
-
     const dataUrl = await toPng(cardRef.current);
-
     const link = document.createElement("a");
     link.download = "bouquet-card.png";
     link.href = dataUrl;
@@ -52,85 +50,46 @@ const BouquetResult = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white relative">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white">
 
-      {/* 💌 CARD */}
       <div
         ref={cardRef}
-        className={`relative max-w-md w-full p-6 rounded-3xl text-center shadow-2xl backdrop-blur-xl border border-white/30
-        ${selectedCard?.bg || "bg-pink-300"}
-        `}
+        className={`relative max-w-md w-full p-6 rounded-3xl text-center shadow-2xl backdrop-blur-xl border ${selectedCard.bg}`}
       >
-        {/* 🌟 Glow */}
-        <div className="absolute inset-0 bg-white/10 rounded-3xl blur-xl"></div>
 
-        {/* ✨ AUTO STICKERS (TOP LEFT) */}
-        {/* ✨ RANDOM STICKERS */}
-{selectedCard?.stickers?.map((s, i) => {
-  const top = Math.random() * 80;   // % position
-  const left = Math.random() * 80;
-
-  const stickerPositions = selectedCard?.stickers?.map(() => ({
-  top: Math.random() * 80,
-  left: Math.random() * 80,
-  rotate: Math.random() * 40 - 20,
-}));
-
-
-  return (
-    <span
-      key={i}
-      className="absolute text-2xl opacity-80"
-      style={{
-        top: `${top}%`,
-        left: `${left}%`,
-        transform: `rotate(${Math.random() * 40 - 20}deg)`,
-      }}
-    >
-      {s}
-    </span>
-  );
-})}
-
-
-
-        {/* 🌸 FLOWERS */}
-        <div className="flex justify-center gap-3 flex-wrap mb-4 relative z-10">
-          {flowers.map((flower, index) => (
+        <div className="flex justify-center gap-3 flex-wrap mb-4">
+          {flowers.map((flower, i) => (
             <img
-              key={index}
+              key={i}
               src={flower.image}
-              alt={flower.name}
-              className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg hover:scale-110 transition"
+              className="w-20 h-20 rounded-full border-4 border-white shadow"
             />
           ))}
         </div>
 
-        {/* 💌 MESSAGE */}
-        <p className="text-lg italic mt-4 text-white relative z-10">
+        <p className="text-lg italic text-white">
           “{message}”
         </p>
 
-        {/* 🎁 ADDONS */}
         {addOns.length > 0 && (
-          <p className="mt-3 text-sm text-white relative z-10">
+          <p className="mt-3 text-sm text-white">
             🎁 {addOns.join(", ")}
           </p>
         )}
 
-        {/* ✨ FOOTER */}
-        <p className="mt-6 text-xs text-white/80 relative z-10">
-          Made with ❤️ FloralAI
+        <p className="mt-4 text-xs text-white/80">
+          {selectedCard.name}
         </p>
+
       </div>
 
-      {/* 📥 DOWNLOAD */}
       <button
         onClick={handleDownload}
-        className="absolute bottom-6 bg-green-500 text-white px-6 py-2 rounded-xl shadow-lg hover:scale-110 transition"
+        className="absolute bottom-6 bg-green-500 text-white px-6 py-2 rounded-xl"
       >
         Download Card 📥
       </button>
+
     </div>
   );
 };

@@ -15,7 +15,6 @@ const MessageGenerator = ({
   const [selectedMessage, setSelectedMessage] = useState("");
   const [error, setError] = useState("");
 
-  // 💌 GENERATE MESSAGE
   const generateMessage = async () => {
     try {
       if (!flowers || flowers.length === 0) {
@@ -28,7 +27,6 @@ const MessageGenerator = ({
       setMessages([]);
       setSelectedMessage("");
 
-      // ✅ IMPORTANT FIX → send ONLY flower names
       const flowerNames = flowers.map((f) => f.name);
 
       const response = await axios.post(
@@ -43,41 +41,34 @@ const MessageGenerator = ({
         }
       );
 
-      console.log("💌 API RESPONSE:", response.data);
-
       const msgs = response?.data?.messages;
 
-      if (!msgs || !Array.isArray(msgs) || msgs.length === 0) {
-        throw new Error("Invalid messages from API");
+      if (!msgs?.length) {
+        throw new Error("No messages returned");
       }
 
       setMessages(msgs);
 
-      // ✅ Auto-select first message (better UX)
       setSelectedMessage(msgs[0]);
       setMessage(msgs[0]);
 
     } catch (err) {
-      console.error("❌ Message generation failed:", err.message);
-
-      // ✅ FALLBACK (VERY IMPORTANT)
-      const fallbackMessages = [
-        "💐 Wishing you happiness and beautiful moments!",
-        "🌸 May your day be filled with love and smiles!",
-        "✨ Sending warmth, joy, and heartfelt wishes!",
+      const fallback = [
+        "💐 Wishing you happiness and love!",
+        "🌸 May your day bloom with joy!",
+        "✨ Sending beautiful floral vibes!",
       ];
 
-      setMessages(fallbackMessages);
-      setSelectedMessage(fallbackMessages[0]);
-      setMessage(fallbackMessages[0]);
+      setMessages(fallback);
+      setSelectedMessage(fallback[0]);
+      setMessage(fallback[0]);
 
-      setError(""); // handled gracefully
+      setError("");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ USER SELECT MESSAGE
   const handleSelect = (msg) => {
     setSelectedMessage(msg);
     setMessage(msg);
@@ -85,38 +76,34 @@ const MessageGenerator = ({
 
   return (
     <div className="text-center">
+
       <h2 className="text-xl font-bold mb-4 text-rose-500">
         Generate Message 💌
       </h2>
 
-      {/* 🔘 BUTTON */}
       <button
         onClick={generateMessage}
         disabled={loading}
-        className={`px-6 py-2 rounded-full shadow text-white transition ${
+        className={`px-6 py-2 rounded-full text-white transition ${
           loading
-            ? "bg-gray-400 cursor-not-allowed"
+            ? "bg-gray-400"
             : "bg-purple-500 hover:bg-purple-600"
         }`}
       >
         {loading ? "Generating..." : "Generate Messages"}
       </button>
 
-      {/* ❌ ERROR */}
-      {error && (
-        <p className="mt-4 text-red-500">{error}</p>
-      )}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {/* 💌 MESSAGES */}
-      {messages.length > 0 && !loading && (
+      {messages.length > 0 && (
         <div className="mt-6 space-y-3">
           <h3 className="font-semibold text-gray-700">
             Choose Your Message 💬
           </h3>
 
-          {messages.map((msg, index) => (
+          {messages.map((msg, i) => (
             <div
-              key={index}
+              key={i}
               onClick={() => handleSelect(msg)}
               className={`cursor-pointer p-3 rounded-xl border transition ${
                 selectedMessage === msg
@@ -130,9 +117,8 @@ const MessageGenerator = ({
         </div>
       )}
 
-      {/* ✅ PREVIEW */}
       {selectedMessage && (
-        <p className="mt-6 bg-white/50 p-4 rounded-xl shadow italic">
+        <p className="mt-6 bg-white/50 p-4 rounded-xl italic">
           "{selectedMessage}"
         </p>
       )}

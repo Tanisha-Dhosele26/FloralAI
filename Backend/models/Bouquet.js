@@ -21,7 +21,17 @@ const bouquetSchema = new mongoose.Schema({
 
   message: String,
 
-  digitalBouquetUrl: String, // optional (PDF/image)
+  selectedCard: {
+  id: String,
+  name: String,
+  bg: String,
+  stickers: [String]
+ },
+
+  digitalBouquetUrl: {
+  type: String,
+  default: "generated URL here"
+  }, // optional (PDF/image)
 
 }, { timestamps: true });
 
