@@ -1,17 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
-router.use(auth); 
+const auth = require("../middleware/auth"); 
 
 const {
   createBouquet,
   updateAddOns,
   updateMessage,
   finalizeBouquet,
+  getMyBouquets,
 } = require("../controllers/bouquetControllers");
+
+router.use(auth); // All routes below require auth
 
 // CREATE
 router.post("/", createBouquet);
+
+// MY BOUQUETS
+router.get("/my", getMyBouquets);
 
 // UPDATE ADDONS
 router.put("/:id/addons", updateAddOns);

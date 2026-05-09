@@ -4,7 +4,6 @@ import RecommendedBouquet from "../components/layout/recommendation/RecommendedB
 import AddonSelector from "../components/layout/recommendation/AddonSelector";
 import MessageGenerator from "../components/layout/recommendation/MessageGenerator";
 import { useNavigate } from "react-router-dom";
-import { authFetch } from "../utils/api";
 
 const UNSPLASH_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
@@ -15,11 +14,10 @@ const Recommend = () => {
   const [style, setStyle] = useState("Romantic");
   const [loading, setLoading] = useState(false);
   const [formdata, setFormData] = useState({});
-  const [bouquetId, setBouquetId] = useState(null);
 
   const navigate = useNavigate();
 
-  // 🌸 STEP 1: FLOWERS + IMAGES
+  // 🌸 STEP 1: GENERATE FLOWERS
   const handleRecommend = async (data) => {
     try {
       setLoading(true);
@@ -39,7 +37,6 @@ const Recommend = () => {
         throw new Error("No flowers received");
       }
 
-      // 🌼 FETCH IMAGES HERE (ONLY ONCE)
       const flowersWithImages = await Promise.all(
         result.flowers.map(async (flower) => {
           try {
@@ -66,22 +63,6 @@ const Recommend = () => {
       );
 
       setFlowers(flowersWithImages);
-
-      // 🔐 Save to DB (optional)
-      try {
-        const saved = await authFetch("/bouquets", {
-          method: "POST",
-          body: JSON.stringify({
-            ...data,
-            flowers: flowersWithImages,
-          }),
-        });
-
-        setBouquetId(saved.bouquetId);
-      } catch {
-        console.warn("Not logged in → skipping DB save");
-      }
-
     } catch (err) {
       console.error(err);
       alert("Failed to generate bouquet");
@@ -90,88 +71,51 @@ const Recommend = () => {
     }
   };
 
-  // 💌 SAVE MESSAGE
-  const handleMessageSave = async (msg) => {
+  // 💌 MESSAGE HANDLER
+  const handleMessageSave = (msg) => {
     setMessage(msg);
-
-    if (!bouquetId) return;
-
-    try {
-      await authFetch(`/bouquets/${bouquetId}/message`, {
-        method: "PUT",
-        body: JSON.stringify({ message: msg }),
-      });
-    } catch (err) {
-      console.error(err);
-    }
   };
 
-  // 🎁 ADDONS
-  const handleAddOnChange = async (newAddOns) => {
+  // 🎁 ADD-ONS
+  const handleAddOnChange = (newAddOns) => {
     setAddOns(newAddOns);
-
-    if (!bouquetId) return;
-
-    try {
-      await authFetch(`/bouquets/${bouquetId}/addons`, {
-        method: "PUT",
-        body: JSON.stringify({ addOns: newAddOns }),
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // 🚀 FINALIZE
-  const handleFinalize = async () => {
-    if (!message) {
-      alert("Please select a message first!");
-      return;
-    }
-
-    try {
-      if (bouquetId) {
-        await authFetch(`/bouquets/${bouquetId}/finalize`, {
-          method: "PUT",
-          body: JSON.stringify({
-            digitalBouquetUrl: "generated-url",
-          }),
-        });
-      }
-
-      navigate("/bouquetResult", {
-        state: { flowers, addOns, message, style },
-      });
-
-    } catch (err) {
-      console.error(err);
-      alert("Finalization failed");
-    }
   };
 
   return (
     <div className="min-h-screen py-20 px-4 relative">
 
       <div className="relative z-10">
+
         <h1 className="text-3xl font-bold text-center mb-10">
           Get Your Perfect Bouquet 🌸
         </h1>
 
+        {/* FORM */}
         <div className="max-w-xl mx-auto bg-white/30 p-6 rounded-3xl">
           <RecommendationForm onRecommend={handleRecommend} />
         </div>
 
+        {/* LOADING */}
         {loading && (
-          <p className="text-center mt-6">Generating bouquet... 🌸</p>
+          <p className="text-center mt-6">
+            Generating bouquet... 🌸
+          </p>
         )}
 
+        {/* RESULTS */}
         {flowers.length > 0 && !loading && (
           <div className="max-w-5xl mx-auto mt-12 space-y-10">
 
+            {/* PREVIEW */}
             <RecommendedBouquet flowers={flowers} />
 
-            <AddonSelector addOns={addOns} setAddOns={handleAddOnChange} />
+            {/* ADD-ONS */}
+            <AddonSelector
+              addOns={addOns}
+              setAddOns={handleAddOnChange}
+            />
 
+            {/* STYLE */}
             <div className="text-center">
               <select
                 value={style}
@@ -184,6 +128,7 @@ const Recommend = () => {
               </select>
             </div>
 
+            {/* MESSAGE GENERATOR */}
             <MessageGenerator
               flowers={flowers}
               addOns={addOns}
@@ -194,23 +139,38 @@ const Recommend = () => {
               personality={formdata.personality}
             />
 
-            <button
-  onClick={() => {
-    if (!message) {
-      alert("Please select a message first!");
-      return;
-    }
+            {/* CONTINUE BUTTON */}
+            <div className="text-center mt-10">
 
-    navigate("/cardDesign", {
-      state: { flowers, addOns, message },
-    });
-  }}
-  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition"
->
-  Create Bouquet Card 💐
-</button>
+              <button
+                onClick={() => {
+                  if (!message) {
+                    alert("Please select a message first!");
+                    return;
+                  }
+
+                  navigate("/cardDesign", {
+                    state: {
+                      flowers,
+                      addOns,
+                      message,
+                      style,
+                      occasion: formdata.occasion,
+                      relationship: formdata.relationship,
+                      personality: formdata.personality,
+                    },
+                  });
+                }}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-3 rounded-xl shadow-lg hover:scale-105 transition"
+              >
+                Create Bouquet Card 💐
+              </button>
+
+            </div>
+
           </div>
         )}
+
       </div>
     </div>
   );

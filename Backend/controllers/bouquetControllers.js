@@ -3,9 +3,25 @@ const asyncHandler = require("../utils/asyncHandler");
 
 // 🔥 CREATE
 exports.createBouquet = asyncHandler(async (req, res) => {
+  const {
+    occasion,
+    relationship,
+    personality,
+    flowers,
+    addOns,
+    message,
+    selectedCard,
+  } = req.body;
+
   const bouquet = await Bouquet.create({
-    ...req.body,
     user: req.user.id,
+    occasion,
+    relationship,
+    personality,
+    flowers: flowers || [],
+    addOns: addOns || [],
+    message,
+    selectedCard, // ✅ correctly saved
   });
 
   res.status(201).json({
@@ -74,14 +90,6 @@ exports.updateMessage = asyncHandler(async (req, res) => {
 
 // 🔥 FINALIZE
 exports.finalizeBouquet = asyncHandler(async (req, res) => {
-  const { digitalBouquetUrl } = req.body;
-
-  if (!digitalBouquetUrl) {
-    const err = new Error("URL is required");
-    err.statusCode = 400;
-    throw err;
-  }
-
   const bouquet = await Bouquet.findById(req.params.id);
 
   if (!bouquet) {
@@ -97,7 +105,7 @@ exports.finalizeBouquet = asyncHandler(async (req, res) => {
     throw err;
   }
 
-  bouquet.digitalBouquetUrl = digitalBouquetUrl;
+  // ✅ ONLY MARK COMPLETED (NO URL REQUIRED)
   bouquet.status = "completed";
 
   await bouquet.save();
@@ -106,4 +114,12 @@ exports.finalizeBouquet = asyncHandler(async (req, res) => {
     success: true,
     bouquet,
   });
+});
+
+
+// my bouquet
+exports.getMyBouquets = asyncHandler(async (req, res) => {
+  const bouquets = await Bouquet.find({ user: req.user.id }).sort({ createdAt: -1 });
+
+  res.json(bouquets);
 });

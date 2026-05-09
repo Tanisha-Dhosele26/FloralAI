@@ -11,7 +11,7 @@ const MyBouquets = () => {
     const fetchBouquets = async () => {
       try {
         const data = await authFetch("/bouquets/my");
-        setBouquets(data);
+        setBouquets(data || []);
       } catch (err) {
         console.error("❌ Failed to fetch bouquets", err.message);
       } finally {
@@ -30,8 +30,7 @@ const MyBouquets = () => {
     );
   }
 
-  // 🌸 EMPTY STATE
-  if (bouquets.length === 0) {
+  if (!bouquets.length) {
     return (
       <div className="text-center mt-20">
         <h2 className="text-2xl text-gray-600">No bouquets yet 💐</h2>
@@ -48,85 +47,94 @@ const MyBouquets = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white py-20 px-4">
 
-      {/* HEADER */}
       <h1 className="text-3xl font-bold text-center mb-10 text-pink-600">
         My Bouquets 💐
       </h1>
 
-      {/* GRID */}
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
 
-        {bouquets.map((b, index) => (
-          <div
-            key={index}
-            className="bg-white/60 backdrop-blur-lg border rounded-2xl p-5 shadow-lg hover:scale-105 transition"
-          >
+        {bouquets.map((b) => {
 
-            {/* 🌸 FLOWERS */}
-            <div className="flex justify-center gap-2 flex-wrap mb-4">
-              {b.flowers?.map((f, i) => (
-                <img
-                  key={i}
-                  src={f.image}
-                  alt={f.name}
-                  className="w-14 h-14 rounded-full object-cover border"
-                />
-              ))}
+          const card = b.selectedCard || {};
+
+          return (
+            <div
+              key={b._id}
+              className={`rounded-2xl p-5 shadow-lg hover:scale-105 transition
+              ${card.bg || "bg-white"}`}
+            >
+
+              {/* FLOWERS */}
+              <div className="flex justify-center gap-2 flex-wrap mb-3">
+                {b.flowers?.map((f, i) => (
+                  <img
+                    key={i}
+                    src={f.image}
+                    alt={f.name}
+                    className="w-14 h-14 rounded-full object-cover border"
+                  />
+                ))}
+              </div>
+
+              {/* CARD TYPE */}
+              <div className="text-center text-xs mb-2 font-semibold text-white/90">
+                🎨 {card.name || "Default Card"}
+              </div>
+
+              {/* MESSAGE */}
+              <p className="text-gray-800 italic text-sm text-center mb-3">
+                “{b.message || "No message added"}”
+              </p>
+
+              {/* ADDONS */}
+              <p className="text-xs text-center mb-2 text-white/80">
+                🎁 {b.addOns?.length ? b.addOns.join(", ") : "No add-ons"}
+              </p>
+
+              {/* DATE */}
+              <p className="text-xs text-center text-white/70 mb-4">
+                {new Date(b.createdAt).toLocaleDateString()}
+              </p>
+
+              {/* BUTTONS */}
+              <div className="flex gap-2 justify-center">
+
+                <button
+                  onClick={() =>
+                    navigate("/bouquetResult", {
+                      state: {
+                        flowers: b.flowers,
+                        addOns: b.addOns,
+                        message: b.message,
+                        selectedCard: b.selectedCard || {},
+                      },
+                    })
+                  }
+                  className="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm"
+                >
+                  View 💐
+                </button>
+
+                <button
+                  onClick={() =>
+                    navigate("/recommend", {
+                      state: {
+                        occasion: b.occasion,
+                        relationship: b.relationship,
+                        personality: b.personality,
+                      },
+                    })
+                  }
+                  className="bg-white text-pink-600 px-3 py-1 rounded-lg text-sm"
+                >
+                  Reuse 🔁
+                </button>
+
+              </div>
+
             </div>
-
-            {/* 💌 MESSAGE */}
-            <p className="text-gray-700 italic text-sm text-center mb-3">
-              “{b.message || "No message added"}”
-            </p>
-
-            {/* 🎁 ADDONS */}
-            <p className="text-xs text-gray-500 text-center mb-2">
-              🎁 {b.addOns?.length ? b.addOns.join(", ") : "No add-ons"}
-            </p>
-
-            {/* 📅 DATE */}
-            <p className="text-xs text-gray-400 text-center mb-4">
-              {new Date(b.createdAt).toLocaleDateString()}
-            </p>
-
-            {/* ACTIONS */}
-            <div className="flex gap-2 justify-center">
-
-              <button
-                onClick={() =>
-                  navigate("/bouquetResult", {
-                    state: {
-                      flowers: b.flowers,
-                      addOns: b.addOns,
-                      message: b.message,
-                      style: b.style || "Romantic",
-                    },
-                  })
-                }
-                className="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-pink-600"
-              >
-                View 💐
-              </button>
-
-              <button
-                onClick={() =>
-                  navigate("/recommend", {
-                    state: {
-                      occasion: b.occasion,
-                      relationship: b.relationship,
-                      personality: b.personality,
-                    },
-                  })
-                }
-                className="bg-white border text-pink-600 px-3 py-1 rounded-lg text-sm hover:bg-pink-50"
-              >
-                Reuse 🔁
-              </button>
-
-            </div>
-          </div>
-        ))}
-
+          );
+        })}
       </div>
     </div>
   );
