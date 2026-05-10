@@ -28,7 +28,7 @@ const generateMessage = asyncHandler(async (req, res) => {
 
   // 💌 PROMPT → generate MULTIPLE messages
   const prompt = `
-Generate 3 different ${style} style messages for a flower bouquet .
+Generate only 3 different ${style} style messages for a flower bouquet .
 
 Details:
 Flowers: ${flowers.join(", ")}
