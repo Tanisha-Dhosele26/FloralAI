@@ -1,12 +1,12 @@
-#🌸 FloralAI – AI Powered Digital Bouquet & Greeting Card Platform
+🌸 FloralAI – AI Powered Digital Bouquet & Greeting Card Platform
 
-##📌 Overview
+📌 Overview
 
 FloralAI is a modern full-stack web application that helps users create personalized digital bouquets and aesthetic greeting cards using AI-powered recommendations.
 
 The platform recommends flowers based on occasions, relationships, emotions, and personality traits, then allows users to:
 
-##💐 Generate beautiful bouquets
+💐 Generate beautiful bouquets
 💌 Select AI-generated personalized messages
 🎁 Add themed gift add-ons
 🎨 Choose animated digital greeting card styles
@@ -14,7 +14,7 @@ The platform recommends flowers based on occasions, relationships, emotions, and
 FloralAI combines emotional gifting with modern UI/UX and interactive digital experiences.
 ✨ Current Features
 
-##🌼 AI Flower Recommendation System
+🌼 AI Flower Recommendation System
 
 Users receive flower recommendations based on:
 
@@ -28,7 +28,7 @@ Birthday 🎂
 Proposal 💍
 Friendship 😊
 
-##🌸 Flower Meaning System
+🌸 Flower Meaning System
 
 Every recommended flower includes:
 
@@ -39,7 +39,7 @@ Example:
 Rose → Love & Passion ❤️
 Lily → Purity & Elegance ✨
 
-##💌 AI Message Generator
+💌 AI Message Generator
 Generates multiple personalized bouquet messages based on:
 Selected flowers
 Occasion
@@ -47,7 +47,7 @@ Relationship
 Style
 Users can choose their favorite message before creating the bouquet card.
 
-##🎁 Add-On Gift Selection
+🎁 Add-On Gift Selection
 Users can enhance bouquets with gifts like:
 🍫 Chocolates
 🧸 Teddy Bears
@@ -55,14 +55,14 @@ Users can enhance bouquets with gifts like:
 🎀 Decorative Elements
 🎨 Digital Bouquet Card System
 
-###One of the main highlights of FloralAI.
+One of the main highlights of FloralAI.
 Users can:
 ✅ Choose from multiple aesthetic card themes
 ✅ Generate animated digital greeting cards
 ✅ Download bouquet cards as images
 ✅ Experience theme-based visual effects
 
-##🌟 Available Card Themes
+🌟 Available Card Themes
 Romantic 💖
 Elegant ✨
 Festive 🎉
@@ -70,13 +70,13 @@ Calm 🌿
 Luxury 💎
 Sunset 🌅
 
-###Each theme includes:
+Each theme includes:
 Unique gradients
 Stickers & decorations
 Confetti animations
 Different visual moods
 
-##✨ Smart Decoration System
+✨ Smart Decoration System
 Cards automatically include:
 Romantic stickers ❤️
 Sparkles ✨
@@ -85,7 +85,7 @@ Luxury icons 💎
 Celebration decorations 🎉
 Decorations are dynamically placed to create a realistic aesthetic design.
 
-##🎊 Animation Features
+🎊 Animation Features
 
 Implemented animations include:
 Confetti effects using canvas-confetti
@@ -94,13 +94,13 @@ Interactive card scaling
 Smooth transitions
 Animated UI components with Framer Motion
 
-##📥 Download Bouquet Card
+📥 Download Bouquet Card
 
 Users can download their final bouquet card as an image using:
 html-to-image
 Downloaded cards can be shared like digital greeting cards.
 
-##🔐 Authentication System
+🔐 Authentication System
 
 Implemented Authentication Features:
 ✅ Signup
@@ -110,7 +110,7 @@ Implemented Authentication Features:
 ✅ User Profile Page
 Users can securely manage their bouquet experience.
 
-##👤 User Profile Dashboard
+👤 User Profile Dashboard
 The profile section includes:
 User information
 Bouquet dashboard
@@ -120,14 +120,14 @@ My Bouquets
 Create Bouquet
 Logout
 
-##💐 My Bouquets Feature
+💐 My Bouquets Feature
 Users can:
 View previously created bouquets
 Revisit saved bouquet designs
 Reuse bouquet styles
 Access bouquet messages
 
-##📖 Flower Encyclopedia
+📖 Flower Encyclopedia
 Interactive encyclopedia page containing:
 Flower descriptions
 Meanings
@@ -135,30 +135,30 @@ Symbolism
 Visual cards
 🛠 Tech Stack
 
-##💻 Frontend
+💻 Frontend
 React.js
 Tailwind CSS
 Framer Motion
 React Router DOM
 Material UI Icons
 
-##⚙️ Backend
+⚙️ Backend
 Node.js
 Express.js
 JWT Authentication
 bcrypt
 REST APIs
 
-##🗄 Database
+🗄 Database
 MongoDB
 Mongoose
 
-##🤖 APIs & Libraries
+🤖 APIs & Libraries
 Unsplash API
 html-to-image
 canvas-confetti
 
-##📂 Project Structure
+📂 Project Structure
 Bash
 FloralAI/
 │
@@ -179,7 +179,7 @@ FloralAI/
 │
 └── README.md
 
-##⚙️ Installation & Setup
+⚙️ Installation & Setup
 1️⃣ Clone Repository
 Bash
 git clone https://github.com/Tanisha-Dhosele26/FloralAI.git
@@ -208,7 +208,7 @@ Create .env file inside Frontend:
 Environment
 VITE_UNSPLASH_ACCESS_KEY=your_unsplash_key
 
-##📸 Major UI Highlights
+📸 Major UI Highlights
 ✅ Glassmorphism UI
 ✅ Animated Digital Greeting Cards
 ✅ Responsive Mobile Design
@@ -217,7 +217,7 @@ VITE_UNSPLASH_ACCESS_KEY=your_unsplash_key
 ✅ Dynamic Stickers & Decorations
 ✅ Modern Dashboard UI
 
-##🚀 Future Scope
+🚀 Future Scope
 Planned advanced features:
 ✨ Canva-style drag & edit
 🔗 Shareable bouquet links
@@ -228,7 +228,7 @@ Planned advanced features:
 🎵 Music-based bouquet cards
 📱 Instagram-story style exports
 
-##👩‍💻 Team Contribution 
+👩‍💻 Team Contribution 
 Tanisha Dhosele → Frontend + AI Integration  
 Vaishnavi Bisen → Backend + Database
 
@@ -251,7 +251,7 @@ REST APIs
 Authentication Backend
 Bouquet Storage System
 
-##📊 Project Status
+📊 Project Status
 Module
 Status
 Frontend UI
@@ -269,7 +269,7 @@ AI Integration
 Deployment
 🔄 Planned
 
-##🎯 Project Goal
+🎯 Project Goal
 FloralAI aims to modernize emotional gifting by combining:
 AI-powered recommendations
 Beautiful digital experiences
@@ -277,7 +277,7 @@ Personalized emotions
 Interactive bouquet creation
 into one seamless platform.
 
-##🌸 Repository Link
+🌸 Repository Link
 https://github.com/Tanisha-Dhosele26/FloralAI.git
 
 
