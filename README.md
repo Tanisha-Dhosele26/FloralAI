@@ -7,8 +7,11 @@ FloralAI is a modern full-stack web application that helps users create personal
 The platform recommends flowers based on occasions, relationships, emotions, and personality traits, then allows users to:
 
 💐 Generate beautiful bouquets
+
 💌 Select AI-generated personalized messages
+
 🎁 Add themed gift add-ons
+
 🎨 Choose animated digital greeting card styles
 📥 Download shareable bouquet cards
 FloralAI combines emotional gifting with modern UI/UX and interactive digital experiences.
