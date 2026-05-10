@@ -182,19 +182,19 @@ const MessageGenerator = ({
         <div className="relative mt-10">
 
           {/* Glow */}
-          <div className="absolute inset-0 bg-pink-200/20 blur-3xl rounded-3xl"></div>
+          <div className="absolute hover:scale-105 inset-0 bg-gradient-to-r from-pink-500 to-rose-500 blur-2xl rounded-3xl "></div>
 
-          <div className="relative bg-white/50 backdrop-blur-xl border border-white/40 rounded-3xl p-6 shadow-xl">
+          <div className="relative bg-white/50 backdrop-blur-xl  ring-4 ring-pink-500 rounded-3xl p-6 shadow-xl">
 
-            <div className="absolute top-3 left-4 text-5xl text-pink-200 opacity-50">
+            <div className="absolute top-3 left-4 text-5xl text-pink-300 opacity-50">
               ❝
             </div>
 
-            <p className="text-xl italic text-gray-700 leading-relaxed px-6 bg:-gradient-to-r from-pink-50 to-pink-600 py-4 rounded-lg">
+            <p className="text-xl  italic text-gray-700 leading-relaxed px-6 hover:text-2xl hover:text-rose-400 py-4 rounded-lg">
               {selectedMessage}
             </p>
 
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-4 ">
               <span className="text-pink-400 text-2xl">
                 💖
               </span>
