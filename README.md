@@ -13,8 +13,11 @@ The platform recommends flowers based on occasions, relationships, emotions, and
 🎁 Add themed gift add-ons
 
 🎨 Choose animated digital greeting card styles
+
 📥 Download shareable bouquet cards
+
 FloralAI combines emotional gifting with modern UI/UX and interactive digital experiences.
+
 ✨ Current Features
 
 🌼 AI Flower Recommendation System
@@ -22,13 +25,21 @@ FloralAI combines emotional gifting with modern UI/UX and interactive digital ex
 Users receive flower recommendations based on:
 
 Occasion
+
 Relationship
+
 Personality
+
 Mood & Style
+
 Examples:
+
 Anniversary ❤️
+
 Birthday 🎂
+
 Proposal 💍
+
 Friendship 😊
 
 🌸 Flower Meaning System
