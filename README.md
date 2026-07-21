@@ -441,7 +441,8 @@ into one seamless platform.
 
 
 🌸 Repository Link
-
 https://github.com/Tanisha-Dhosele26/FloralAI.git
+
+Live Demo : https://floral-ai-ten.vercel.app/
 
 
