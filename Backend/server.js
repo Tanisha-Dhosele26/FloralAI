@@ -6,7 +6,8 @@ const bouquetRoutes = require("./routes/bouquetRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-frontend-domain.com",
+  "https://floral-ai-ten.vercel.app/",
+  "https://floral-6y7d378ol-tanishadhosele-2310s-projects.vercel.app/",
 ];
 
 require('dotenv').config();
