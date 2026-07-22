@@ -30,7 +30,7 @@ const MessageGenerator = ({
       const flowerNames = flowers.map((f) => f.name);
 
       const response = await axios.post(
-        "http://localhost:5000/api/message/generate",
+        "https://floralai.onrender.com/api/message/generate",
         {
           flowers: flowerNames,
           addOns: addOns || [],

@@ -23,7 +23,7 @@ const Recommend = () => {
       setLoading(true);
       setFormData(data);
 
-      const res = await fetch("http://localhost:5000/api/flowers/generate", {
+      const res = await fetch("https://floralai.onrender.com/api/flowers/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
