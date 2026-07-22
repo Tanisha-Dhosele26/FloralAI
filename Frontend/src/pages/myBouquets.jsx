@@ -10,7 +10,7 @@ const MyBouquets = () => {
   useEffect(() => {
     const fetchBouquets = async () => {
       try {
-        const data = await authFetch("https://floralai.onrender.com/api/bouquets/my");
+        const data = await authFetch("/bouquets/my");
         setBouquets(data || []);
       } catch (err) {
         console.error("❌ Failed to fetch bouquets", err.message);
