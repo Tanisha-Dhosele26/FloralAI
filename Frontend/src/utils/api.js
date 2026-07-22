@@ -1,4 +1,4 @@
-const BASE_URL = "https://floralai.onrender.com";
+const BASE_URL = "https://floralai.onrender.com/api";
 
 export const authFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
