@@ -6,8 +6,8 @@ const bouquetRoutes = require("./routes/bouquetRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://floral-ai-ten.vercel.app/",
-  "https://floral-6y7d378ol-tanishadhosele-2310s-projects.vercel.app/",
+  "https://floral-ai-ten.vercel.app",
+  "https://floral-6y7d378ol-tanishadhosele-2310s-projects.vercel.app",
 ];
 
 require('dotenv').config();
@@ -16,6 +16,7 @@ connectDB();
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log("Origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
